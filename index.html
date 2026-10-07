@@ -26,20 +26,59 @@
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen py-6 px-3">
 
   <!-- ================= ACCESS LOCK SCREEN ================= -->
-  <div id="lockScreen" class="max-w-md mx-auto bg-white p-7 rounded-3xl border border-slate-200 shadow-2xl text-center space-y-4 my-12">
+  <div id="lockScreen" class="max-w-md mx-auto bg-white p-7 rounded-3xl border border-slate-200 shadow-2xl text-center space-y-4 my-12 relative">
+    
+    <!-- Admin Settings Trigger (Hidden Gear Icon) -->
+    <button type="button" onclick="openAdminModal()" class="absolute top-4 right-4 text-slate-300 hover:text-indigo-600 transition" title="ፓስዋርድ ቀይር">
+      ⚙️
+    </button>
+
     <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
       🔐
     </div>
     <h2 class="text-lg font-bold text-slate-900">የአንድ ለአንድ ሚስጥራዊ መዳረሻ</h2>
     <p class="text-xs text-slate-500 leading-relaxed">
-      ይህ የህይወትና የማንነት መለኪያ የተዘጋጀው በኮች ለተመረጡ ልዩ እህቶች ብቻ ነው። ለመጀመር ከኮችህ የተሰጠሽን ባለ 6 ዲጂት መግቢያ ኮድ አስገቢ።
+      ይህ የህይወትና የማንነት መለኪያ የተዘጋጀው በኮች ለተመረጡ ልዩ እህቶች ብቻ ነው። ለመጀመር ከኮች የተሰጠሽን መግቢያ ኮድ አስገቢ።
     </p>
     <div class="space-y-3 pt-2">
-      <input type="password" id="accessPasscode" maxlength="8" placeholder="የመግቢያ ኮድ አስገቢ" class="w-full text-center tracking-widest text-base font-bold py-3 bg-slate-50 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+      <input type="password" id="accessPasscode" maxlength="10" placeholder="የመግቢያ ኮድ አስገቢ" class="w-full text-center tracking-widest text-base font-bold py-3 bg-slate-50 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:outline-none">
       <button type="button" onclick="unlockPortal()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md transition text-xs">
         ፍቀድና ወደ ምዘናው ግባ ➔
       </button>
       <p id="lockError" class="text-xs font-semibold text-rose-600 hidden">የተሳሳተ የመግቢያ ኮድ ነው! እባክሽ ኮችሽን አናግሪ።</p>
+    </div>
+  </div>
+
+  <!-- ================= ADMIN PASSWORD CHANGER MODAL ================= -->
+  <div id="adminModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-slate-200 text-center">
+      <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+        🛠️
+      </div>
+      <h3 class="text-base font-bold text-slate-900">የመግቢያ ፓስዋርድ መቀየሪያ (ኮች ብቻ)</h3>
+      <p class="text-[11px] text-slate-500">ፓስዋርዱን ለመቀየር ዋናውን የኮች ማስተር ቁጥር (`8888`) አስገባ።</p>
+      
+      <div class="space-y-2 text-left">
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 mb-1">የኮች ማስተር ቁጥር (Master Pin)</label>
+          <input type="password" id="masterPinInput" placeholder="8888" class="w-full text-center py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-600 mb-1">አዲሱ ለተጠቃሚዎች የሚሰጥ ፓስዋርድ</label>
+          <input type="text" id="newPasscodeInput" placeholder="አዲሱን ፓስዋርድ ጻፍ" class="w-full text-center py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+      </div>
+
+      <p id="adminStatusMsg" class="text-xs font-bold hidden"></p>
+
+      <div class="grid grid-cols-2 gap-2 pt-2">
+        <button type="button" onclick="closeAdminModal()" class="py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">
+          ሰርዝ
+        </button>
+        <button type="button" onclick="saveNewPassword()" class="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow">
+          ቀይርና መዝግብ
+        </button>
+      </div>
     </div>
   </div>
 
@@ -65,7 +104,6 @@
   <!-- ================= MAIN APP WRAPPER ================= -->
   <div id="mainApp" class="hidden max-w-xl mx-auto space-y-5">
 
-    <!-- Header Section -->
     <header class="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl shadow-xl overflow-hidden relative border border-slate-800">
       <div class="relative h-48 w-full overflow-hidden">
         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80" alt="Empowered Ethiopian Woman" class="w-full h-full object-cover object-top opacity-60">
@@ -85,7 +123,6 @@
       </div>
     </header>
 
-    <!-- Demo Button -->
     <div class="flex justify-end">
       <button type="button" onclick="loadEdenDemo()" class="text-xs bg-white border border-indigo-200 text-indigo-700 hover:bg-indigo-50 font-bold px-3 py-1.5 rounded-xl shadow-sm flex items-center gap-1.5 transition">
         ✨ የኤደን ናሙና (Demo) ሙላ
@@ -95,7 +132,6 @@
     <!-- MAIN FORM -->
     <form id="identityForm" onsubmit="calculateIdentity(event)" class="space-y-5">
 
-      <!-- SECTION 1: Profile -->
       <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
           <span class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs">1</span>
@@ -129,7 +165,6 @@
           </div>
         </div>
 
-        <!-- Package -->
         <div class="pt-2 border-t border-slate-100">
           <label class="block text-xs font-bold text-indigo-950 mb-1.5">የምትፈልጊው የኮቺንግ አገልግሎት የጊዜ ቆይታ *</label>
           <div class="grid grid-cols-2 gap-2 text-xs">
@@ -168,7 +203,6 @@
           አሁን ያለሽበት እውነታ (የሚሰማሽን ምረጪ)
         </h2>
 
-        <!-- Q1 -->
         <div class="space-y-2">
           <p class="text-xs font-bold text-slate-800">1. በራስሽ ላይ ያለሽ እምነት እና ክብር ምን ይመስላል?</p>
           <div class="space-y-2">
@@ -193,7 +227,6 @@
           </div>
         </div>
 
-        <!-- Q2 -->
         <div class="space-y-2 pt-2 border-t border-slate-100">
           <p class="text-xs font-bold text-slate-800">2. ሀሳብሽን ወይም ቅሬታሽን ለማዳም እና ለሌሎች መግለጽ ትችያለሽ?</p>
           <div class="space-y-2">
@@ -218,7 +251,6 @@
           </div>
         </div>
 
-        <!-- Q3 -->
         <div class="space-y-2 pt-2 border-t border-slate-100">
           <p class="text-xs font-bold text-slate-800">3. ብቸኝነት፣ ናፍቆትና ጭንቀት ሲመጣብሽ ምን ታደርጊያለሽ?</p>
           <div class="space-y-2">
@@ -243,7 +275,6 @@
           </div>
         </div>
 
-        <!-- Q4 -->
         <div class="space-y-2 pt-2 border-t border-slate-100">
           <p class="text-xs font-bold text-slate-800">4. ደመወዝሽ እና የገንዘብ አያያዝሽ ምን ይመስላል?</p>
           <div class="space-y-2">
@@ -274,7 +305,7 @@
       <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-4">
         <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
           <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs">3</span>
-          በ 3 ወር ውስጥ የምትገነቢያቸው 10 ድንቅ ማንነቶች (የለውጥ ቃል-ኪዳን)
+          በ 3 ወር ውስጥ የምትገነቢያቸው 10 ድንቅ ማንነቶች
         </h2>
 
         <div class="space-y-2 text-xs">
@@ -320,7 +351,6 @@
           </label>
         </div>
 
-        <!-- Accountability Note -->
         <div class="bg-indigo-50 border border-indigo-200 p-3 rounded-2xl text-xs text-indigo-950 leading-relaxed">
           ⚖️ <strong>የስኬቱ ሚስጥር፦</strong> ኮቹ አቅጣጫውን ያሳያል፤ ትልቁን የለውጥ ድርሻ (80%-90%) የምትወስጂው ግን <strong>አንቺ ራስሽ በተግባር ስትተገብሪው</strong> ብቻ ነው።
         </div>
@@ -336,7 +366,6 @@
     <!-- RESULT & REPORT SECTION -->
     <div id="reportContainer" class="hidden space-y-4">
       
-      <!-- Printable PDF Card -->
       <div id="pdfCard" class="bg-white p-6 rounded-3xl border border-slate-300 shadow-xl space-y-5">
         
         <div class="border-b border-slate-200 pb-4 text-center">
@@ -348,7 +377,6 @@
           <p id="res_pkg" class="text-xs font-bold text-indigo-700 mt-1">የተመረጠ ፕሮግራም፦ የ3 ወር ትራንስፎርሜሽን</p>
         </div>
 
-        <!-- Strict Realistic Score Showcase -->
         <div class="bg-slate-950 text-white rounded-2xl p-5 text-center space-y-2">
           <p class="text-xs font-semibold text-slate-400">አጠቃላይ የእውነተኛ ማንነት እና የነጻነት ደረጃ</p>
           <div class="flex items-center justify-center gap-2">
@@ -360,7 +388,6 @@
           </div>
         </div>
 
-        <!-- Severe Reality Wake-Up Call with AI Replacement Warning -->
         <div class="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-xs space-y-2.5 text-slate-800 leading-relaxed">
           <p class="font-black text-rose-900 text-sm flex items-center gap-1.5">
             🚨 እህቴ ሆይ፦ ይህንን አስደንጋጭ እውነታ ካላወቅሽ ነገ ታለቅሻለሽ!
@@ -379,7 +406,6 @@
           </p>
         </div>
 
-        <!-- Goals -->
         <div class="border border-slate-200 p-4 rounded-2xl space-y-2 text-xs">
           <p class="font-bold text-slate-900">🎯 በኮቺንጉ የምትገነቢያቸው 10 ድንቅ ማንነቶች፦</p>
           <p class="text-slate-600">ራስ መተማመን • ሀሳብን መግለጽ • ተጽዕኖ ፈጣሪነት • ምስጋና • ባለራዕይነት • ውስጣዊ ደስታ • ለሌሎች መሆን • ቆራጥነት • መንፈሳዊ ጥንካሬ • የ1 ዓመት ግብ</p>
@@ -408,12 +434,20 @@
   </div>
 
   <script>
-    // ⚙️ ምስጢራዊ የመግቢያ ኮድ
-    const SECRET_ACCESS_CODE = "121921"; 
+    // ⚙️ የኮች ዋና ሚስጥር ቁልፍ (ፓስዋርድ ለመቀየር ብቻ የሚያገለግል)
+    const MASTER_ADMIN_PIN = "8888";
+
+    // ነባሪ የመግቢያ ኮድ (ካልተቀየረ)
+    const DEFAULT_PASSCODE = "121921";
 
     // ⚙️ የኮች መረጃ
     const COACH_PHONE_NUMBER = "251948622684";
     const COACH_TELEGRAM_USER = "Yohannesmezgebu";
+
+    // አሁን የሚሰራውን ፓስዋርድ አምጣ
+    function getActivePasscode() {
+      return localStorage.getItem('custom_access_passcode') || DEFAULT_PASSCODE;
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       if (localStorage.getItem('identity_form_expired') === 'true') {
@@ -426,8 +460,9 @@
     function unlockPortal() {
       const input = document.getElementById('accessPasscode').value.trim();
       const err = document.getElementById('lockError');
+      const activeCode = getActivePasscode();
 
-      if (input === SECRET_ACCESS_CODE) {
+      if (input === activeCode) {
         localStorage.removeItem('identity_form_expired');
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('expiredScreen').classList.add('hidden');
@@ -436,6 +471,48 @@
       } else {
         err.classList.remove('hidden');
       }
+    }
+
+    // Admin Modal Controls
+    function openAdminModal() {
+      document.getElementById('adminModal').classList.remove('hidden');
+      document.getElementById('masterPinInput').value = '';
+      document.getElementById('newPasscodeInput').value = '';
+      document.getElementById('adminStatusMsg').classList.add('hidden');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.add('hidden');
+    }
+
+    function saveNewPassword() {
+      const pin = document.getElementById('masterPinInput').value.trim();
+      const newPass = document.getElementById('newPasscodeInput').value.trim();
+      const status = document.getElementById('adminStatusMsg');
+
+      if (pin !== MASTER_ADMIN_PIN) {
+        status.className = "text-xs font-bold text-rose-600";
+        status.innerText = "❌ የተሳሳተ የኮች ማስተር ቁጥር!";
+        status.classList.remove('hidden');
+        return;
+      }
+
+      if (!newPass || newPass.length < 3) {
+        status.className = "text-xs font-bold text-amber-600";
+        status.innerText = "⚠️ አዲሱ ፓስዋርድ ቢያንስ 3 ፊደል/ቁጥር ይሁን!";
+        status.classList.remove('hidden');
+        return;
+      }
+
+      // Save custom password locally
+      localStorage.setItem('custom_access_passcode', newPass);
+      status.className = "text-xs font-bold text-emerald-600";
+      status.innerText = `✅ ፓስዋርዱ በተሳካ ሁኔታ ወደ "${newPass}" ተቀይሯል!`;
+      status.classList.remove('hidden');
+
+      setTimeout(() => {
+        closeAdminModal();
+      }, 1200);
     }
 
     function lockAndExpire() {
