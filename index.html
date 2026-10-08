@@ -82,14 +82,14 @@
     </div>
   </div>
 
-  <!-- ================= EXPIRED NOTICE SCREEN ================= -->
+  <!-- ================= EXPIRED NOTICE SCREEN (ከ 2 ሙከራ በኋላ) ================= -->
   <div id="expiredScreen" class="hidden max-w-md mx-auto bg-white p-7 rounded-3xl border border-rose-200 shadow-2xl text-center space-y-4 my-12">
     <div class="w-16 h-16 bg-rose-50 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
       ⏳
     </div>
-    <h2 class="text-lg font-bold text-slate-900">ይህ የመዳረሻ ዕድል አብቅቷል!</h2>
+    <h2 class="text-lg font-bold text-slate-900">የ 2 ጊዜ የመሞከር ዕድልሽ አብቅቷል!</h2>
     <p class="text-xs text-slate-600 leading-relaxed">
-      ይህንን ቅጽ አንዴ ሞልተሽ ውጤትሽን ስለወሰድሽ ደህንነቱ የተጠበቀ እንዲሆን ገጹ ተዘግቷል። ተጨማሪ ምክክር ወይም ዳግም ፍቃድ ከፈለግሽ ኮችሽን አናግሪ።
+      ይህንን ቅጽ የተፈቀደልሽን <strong>2 ጊዜ</strong> ሞልተሽ ውጤትሽን ስለወሰድሽ ደህንነቱ የተጠበቀ እንዲሆን ገጹ ተዘግቷል። ተጨማሪ ምክክር ወይም ዳግም ፍቃድ ከፈለግሽ ኮችሽን አናግሪ።
     </p>
     <div class="grid grid-cols-2 gap-2 pt-2">
       <button type="button" onclick="contactTelegram()" class="py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
@@ -104,13 +104,17 @@
   <!-- ================= MAIN APP WRAPPER ================= -->
   <div id="mainApp" class="hidden max-w-xl mx-auto space-y-5">
 
+    <!-- Header Section -->
     <header class="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl shadow-xl overflow-hidden relative border border-slate-800">
       <div class="relative h-48 w-full overflow-hidden">
         <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80" alt="Empowered Woman" class="w-full h-full object-cover object-top opacity-60">
         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
-        <div class="absolute top-4 left-4">
+        <div class="absolute top-4 left-4 flex gap-2">
           <span class="inline-block bg-rose-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">
             ልዩ የአንድ ለአንድ ፕሮግራም
+          </span>
+          <span id="attemptBadge" class="inline-block bg-indigo-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full backdrop-blur-sm">
+            ሙከራ 1 ከ 2
           </span>
         </div>
       </div>
@@ -388,7 +392,7 @@
         </div>
 
         <div id="verdictBox" class="bg-rose-50 border border-rose-200 p-4 rounded-2xl text-xs space-y-2.5 text-slate-800 leading-relaxed">
-          <!-- Dynamic Content -->
+          <!-- Dynamic Content based on score -->
         </div>
 
         <div class="border border-slate-200 p-4 rounded-2xl space-y-2 text-xs">
@@ -400,15 +404,15 @@
 
       <!-- Action Buttons -->
       <div class="space-y-2">
-        <button type="button" onclick="downloadPDFAndLock()" class="w-full py-3.5 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-2 text-xs md:text-sm">
+        <button type="button" onclick="downloadPDFAndTrack()" class="w-full py-3.5 bg-indigo-700 hover:bg-indigo-800 text-white font-bold rounded-2xl shadow-lg transition flex items-center justify-center gap-2 text-xs md:text-sm">
           📥 ሪፖርቱን በፒዲኤፍ (PDF) አውርጂ
         </button>
         
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" onclick="sendTelegramAndLock()" class="py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-1.5 text-xs">
+          <button type="button" onclick="sendTelegramAndTrack()" class="py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-1.5 text-xs">
             ✈️ በቴሌግራም ላኪ
           </button>
-          <button type="button" onclick="sendWhatsAppAndLock()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-1.5 text-xs">
+          <button type="button" onclick="sendWhatsAppAndTrack()" class="py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition flex items-center justify-center gap-1.5 text-xs">
             💬 በዋትስአፕ ላኪ
           </button>
         </div>
@@ -421,6 +425,8 @@
   <script>
     const MASTER_ADMIN_PIN = "8888";
     const DEFAULT_PASSCODE = "121921";
+    const MAX_ALLOWED_ATTEMPTS = 2; // ⭐️ የተፈቀደው 2 ጊዜ ብቻ
+
     const COACH_PHONE_NUMBER = "251948622684";
     const COACH_TELEGRAM_USER = "Yohannesmezgebu";
 
@@ -428,8 +434,21 @@
       return localStorage.getItem('custom_access_passcode') || DEFAULT_PASSCODE;
     }
 
+    function getAttemptCount() {
+      return parseInt(localStorage.getItem('identity_user_attempts') || '0');
+    }
+
+    function updateAttemptUI() {
+      const attempts = getAttemptCount();
+      const badge = document.getElementById('attemptBadge');
+      if (badge) {
+        badge.innerText = `ሙከራ ${attempts + 1} ከ ${MAX_ALLOWED_ATTEMPTS}`;
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-      if (localStorage.getItem('identity_form_expired') === 'true') {
+      const attempts = getAttemptCount();
+      if (attempts >= MAX_ALLOWED_ATTEMPTS) {
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('expiredScreen').classList.remove('hidden');
         document.getElementById('mainApp').classList.add('hidden');
@@ -442,11 +461,18 @@
       const activeCode = getActivePasscode();
 
       if (input === activeCode) {
-        localStorage.removeItem('identity_form_expired');
+        const attempts = getAttemptCount();
+        if (attempts >= MAX_ALLOWED_ATTEMPTS) {
+          document.getElementById('lockScreen').classList.add('hidden');
+          document.getElementById('expiredScreen').classList.remove('hidden');
+          return;
+        }
+
         document.getElementById('lockScreen').classList.add('hidden');
         document.getElementById('expiredScreen').classList.add('hidden');
         document.getElementById('mainApp').classList.remove('hidden');
         err.classList.add('hidden');
+        updateAttemptUI();
       } else {
         err.classList.remove('hidden');
       }
@@ -483,6 +509,9 @@
       }
 
       localStorage.setItem('custom_access_passcode', newPass);
+      // ኮች ፓስዋርድ ሲቀይር የሙከራ ቆጣሪውን ዳግም ያስጀምረዋል
+      localStorage.setItem('identity_user_attempts', '0');
+
       status.className = "text-xs font-bold text-emerald-600";
       status.innerText = `✅ ፓስዋርዱ ወደ "${newPass}" ተቀይሯል!`;
       status.classList.remove('hidden');
@@ -492,22 +521,30 @@
       }, 1200);
     }
 
-    function lockAndExpire() {
-      localStorage.setItem('identity_form_expired', 'true');
-      setTimeout(() => {
-        document.getElementById('mainApp').classList.add('hidden');
-        document.getElementById('expiredScreen').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }, 1500);
+    // ⭐️ 2 ሙከራዎችን መቆጣጠሪያ
+    function recordAttemptAndCheck() {
+      let currentAttempts = getAttemptCount() + 1;
+      localStorage.setItem('identity_user_attempts', currentAttempts.toString());
+
+      if (currentAttempts >= MAX_ALLOWED_ATTEMPTS) {
+        setTimeout(() => {
+          document.getElementById('mainApp').classList.add('hidden');
+          document.getElementById('expiredScreen').classList.remove('hidden');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 1500);
+      } else {
+        updateAttemptUI();
+        alert(`✅ 1ኛ ሙከራሽን አጠናቅቀሻል! 1 የመጨረሻ ሙከራ ይቀረሻል።`);
+      }
     }
 
     function contactWhatsApp() {
-      const text = `ሰላም ኮች! የአንድ ለአንድ የማንነት መለኪያውን ሞልቼ ጨርሼ ነበር። አዲስ የመግቢያ ፈቃድ ወይም ተጨማሪ ምክክር እፈልጋለሁ።`;
+      const text = `ሰላም ኮች! የአንድ ለአንድ የማንነት መለኪያውን 2 ጊዜ ሞክሬ ጨርሻለሁ። አዲስ የመግቢያ ፈቃድ ወይም ተጨማሪ ምክክር እፈልጋለሁ።`;
       window.open(`https://api.whatsapp.com/send?phone=${COACH_PHONE_NUMBER}&text=${encodeURIComponent(text)}`, '_blank');
     }
 
     function contactTelegram() {
-      const text = `ሰላም ኮች! የአንድ ለአንድ የማንነት መለኪያውን ሞልቼ ጨርሼ ነበር። አዲስ የመግቢያ ፈቃድ ወይም ተጨማሪ ምክክር እፈልጋለሁ።`;
+      const text = `ሰላም ኮች! የአንድ ለአንድ የማንነት መለኪያውን 2 ጊዜ ሞክሬ ጨርሻለሁ። አዲስ የመግቢያ ፈቃድ ወይም ተጨማሪ ምክክር እፈልጋለሁ።`;
       window.open(`https://t.me/${COACH_TELEGRAM_USER}?text=${encodeURIComponent(text)}`, '_blank');
     }
 
@@ -606,7 +643,8 @@
     }
 
     function getFormattedReportText() {
-      return `*የአንድ ለአንድ የማንነት መለኪያ ሪፖርት*\n\n` +
+      const attemptNum = getAttemptCount() + 1;
+      return `*የአንድ ለአንድ የማንነት መለኪያ ሪፖርት (ሙከራ ${attemptNum})*\n\n` +
         `👤 *ስም:* ${clientName}\n` +
         `📍 *ከተማ:* ${clientLocation}\n` +
         `📦 *የተመረጠ ፕሮግራም:* ${selectedPackage}\n` +
@@ -614,7 +652,7 @@
         `💡 *ውሳኔ:* ወደፊት በባዶ እጄ ላለመቅረት እና ራሴን ለማዳን ስልጠናውን አሁኑኑ ለመጀመር ወስኛለሁ!`;
     }
 
-    function downloadPDFAndLock() {
+    function downloadPDFAndTrack() {
       const element = document.getElementById('pdfCard');
       const opt = {
         margin:       [8, 8, 8, 8],
@@ -624,21 +662,21 @@
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
       html2pdf().set(opt).from(element).save();
-      lockAndExpire();
+      recordAttemptAndCheck();
     }
 
-    function sendTelegramAndLock() {
+    function sendTelegramAndTrack() {
       const text = getFormattedReportText();
       const url = `https://t.me/${COACH_TELEGRAM_USER}?text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
-      lockAndExpire();
+      recordAttemptAndCheck();
     }
 
-    function sendWhatsAppAndLock() {
+    function sendWhatsAppAndTrack() {
       const text = getFormattedReportText();
       const url = `https://api.whatsapp.com/send?phone=${COACH_PHONE_NUMBER}&text=${encodeURIComponent(text)}`;
       window.open(url, '_blank');
-      lockAndExpire();
+      recordAttemptAndCheck();
     }
   </script>
 </body>
