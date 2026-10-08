@@ -28,10 +28,12 @@
   <!-- ================= ACCESS LOCK SCREEN ================= -->
   <div id="lockScreen" class="max-w-md mx-auto bg-white p-7 rounded-3xl border border-slate-200 shadow-2xl text-center space-y-4 my-12 relative">
     
-    <!-- Admin Settings Trigger (Hidden Gear Icon) -->
-    <button type="button" onclick="openAdminModal()" class="absolute top-4 right-4 text-slate-300 hover:text-indigo-600 transition" title="ፓስዋርድ ቀይር">
-      ⚙️
-    </button>
+    <!-- Admin Settings Trigger (Reliable Button) -->
+    <div class="flex justify-end">
+      <button type="button" onclick="adminChangePasswordPrompt()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-full font-bold transition flex items-center gap-1 cursor-pointer">
+        ⚙️ ኮድ ቀይር
+      </button>
+    </div>
 
     <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
       🔐
@@ -41,44 +43,11 @@
       ይህ የህይወትና የማንነት መለኪያ የተዘጋጀው በኮች ለተመረጡ ልዩ እህቶች ብቻ ነው። ለመጀመር ከኮች የተሰጠሽን መግቢያ ኮድ አስገቢ።
     </p>
     <div class="space-y-3 pt-2">
-      <input type="password" id="accessPasscode" maxlength="10" placeholder="የመግቢያ ኮድ አስገቢ" class="w-full text-center tracking-widest text-base font-bold py-3 bg-slate-50 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:outline-none">
-      <button type="button" onclick="unlockPortal()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl shadow-md transition text-xs">
+      <input type="password" id="accessPasscode" maxlength="15" placeholder="የመግቢያ ኮድ አስገቢ" onkeypress="handleEnterKey(event)" class="w-full text-center tracking-widest text-base font-bold py-3 bg-slate-50 border border-slate-300 rounded-2xl focus:ring-2 focus:ring-indigo-600 focus:outline-none">
+      <button type="button" id="unlockBtn" onclick="unlockPortal()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold rounded-2xl shadow-md transition text-xs cursor-pointer">
         ፍቀድና ወደ ምዘናው ግባ ➔
       </button>
       <p id="lockError" class="text-xs font-semibold text-rose-600 hidden">የተሳሳተ የመግቢያ ኮድ ነው! እባክሽ ኮችሽን አናግሪ።</p>
-    </div>
-  </div>
-
-  <!-- ================= ADMIN PASSWORD CHANGER MODAL ================= -->
-  <div id="adminModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center px-4">
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full space-y-4 shadow-2xl border border-slate-200 text-center">
-      <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
-        🛠️
-      </div>
-      <h3 class="text-base font-bold text-slate-900">የመግቢያ ፓስዋርድ መቀየሪያ (ኮች ብቻ)</h3>
-      <p class="text-[11px] text-slate-500">ፓስዋርዱን ለመቀየር ዋናውን የኮች ማስተር ቁጥር (`8888`) አስገባ።</p>
-      
-      <div class="space-y-2 text-left">
-        <div>
-          <label class="block text-[11px] font-bold text-slate-600 mb-1">የኮች ማስተር ቁጥር (Master Pin)</label>
-          <input type="password" id="masterPinInput" placeholder="8888" class="w-full text-center py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500">
-        </div>
-        <div>
-          <label class="block text-[11px] font-bold text-slate-600 mb-1">አዲሱ ለተጠቃሚዎች የሚሰጥ ፓስዋርድ</label>
-          <input type="text" id="newPasscodeInput" placeholder="አዲሱን ፓስዋርድ ጻፍ" class="w-full text-center py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-      </div>
-
-      <p id="adminStatusMsg" class="text-xs font-bold hidden"></p>
-
-      <div class="grid grid-cols-2 gap-2 pt-2">
-        <button type="button" onclick="closeAdminModal()" class="py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">
-          ሰርዝ
-        </button>
-        <button type="button" onclick="saveNewPassword()" class="py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow">
-          ቀይርና መዝግብ
-        </button>
-      </div>
     </div>
   </div>
 
@@ -97,6 +66,11 @@
       </button>
       <button type="button" onclick="contactWhatsApp()" class="py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl shadow-md transition text-xs flex items-center justify-center gap-1.5">
         💬 ዋትስአፕ
+      </button>
+    </div>
+    <div class="pt-2">
+      <button type="button" onclick="resetFormForTesting()" class="text-[10px] text-slate-400 hover:underline">
+        (ለኮች ብቻ፦ ፈተናውን እንደ አዲስ ጀምር)
       </button>
     </div>
   </div>
@@ -201,11 +175,11 @@
         </div>
       </div>
 
-      <!-- SECTION 2: 10 NLP-BASED PSYCHOLOGICAL QUESTIONS -->
+      <!-- SECTION 2: 10 NLP QUESTIONS -->
       <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm space-y-5">
         <h2 class="text-sm font-bold text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-2">
           <span class="w-6 h-6 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center text-xs">2</span>
-          አሁን ያለሽበት እውነታ (10ቱ የ NLP ጥልቅ መመዘኛዎች)
+          አሁን ያለሽበት እውነታ (10ቱ ጥልቅ መመዘኛዎች)
         </h2>
 
         <!-- Q1 -->
@@ -610,6 +584,12 @@
       }
     });
 
+    function handleEnterKey(event) {
+      if (event.key === "Enter") {
+        unlockPortal();
+      }
+    }
+
     function unlockPortal() {
       const input = document.getElementById('accessPasscode').value.trim();
       const err = document.getElementById('lockError');
@@ -633,46 +613,33 @@
       }
     }
 
-    function openAdminModal() {
-      document.getElementById('adminModal').classList.remove('hidden');
-      document.getElementById('masterPinInput').value = '';
-      document.getElementById('newPasscodeInput').value = '';
-      document.getElementById('adminStatusMsg').classList.add('hidden');
-    }
+    // ⚙️ 100% አስተማማኝ የአድሚን ፓስዋርድ መቀየሪያ (በስልክ ላይ የማይጣበቅ)
+    function adminChangePasswordPrompt() {
+      const masterInput = prompt("የኮች ማስተር ቁጥር (Master Pin) አስገባ፦");
+      if (!masterInput) return;
 
-    function closeAdminModal() {
-      document.getElementById('adminModal').classList.add('hidden');
-    }
-
-    function saveNewPassword() {
-      const pin = document.getElementById('masterPinInput').value.trim();
-      const newPass = document.getElementById('newPasscodeInput').value.trim();
-      const status = document.getElementById('adminStatusMsg');
-
-      if (pin !== MASTER_ADMIN_PIN) {
-        status.className = "text-xs font-bold text-rose-600";
-        status.innerText = "❌ የተሳሳተ የኮች ማስተር ቁጥር!";
-        status.classList.remove('hidden');
+      if (masterInput.trim() !== MASTER_ADMIN_PIN) {
+        alert("❌ የተሳሳተ ማስተር ቁጥር ነው!");
         return;
       }
 
-      if (!newPass || newPass.length < 3) {
-        status.className = "text-xs font-bold text-amber-600";
-        status.innerText = "⚠️ አዲሱ ፓስዋርድ ቢያንስ 3 ፊደል/ቁጥር ይሁን!";
-        status.classList.remove('hidden');
-        return;
+      const currentPass = getActivePasscode();
+      const newPass = prompt(`አሁን የሚሰራው ፓስዋርድ: ${currentPass}\n\nአዲሱን ለተጠቃሚዎች የሚሰጥ ፓስዋርድ አስገባ፦`);
+      if (newPass && newPass.trim().length >= 3) {
+        localStorage.setItem('custom_access_passcode', newPass.trim());
+        localStorage.setItem('identity_user_attempts', '0');
+        alert(`✅ ፓስዋርዱ በተሳካ ሁኔታ ወደ "${newPass.trim()}" ተቀይሯል!\nየሙከራ ቆጣሪውም ዜሮ ሆኗል።`);
+      } else if (newPass !== null) {
+        alert("⚠️ ፓስዋርዱ ቢያንስ 3 ፊደል ወይም ቁጥር መሆን አለበት!");
       }
+    }
 
-      localStorage.setItem('custom_access_passcode', newPass);
-      localStorage.setItem('identity_user_attempts', '0');
-
-      status.className = "text-xs font-bold text-emerald-600";
-      status.innerText = `✅ ፓስዋርዱ ወደ "${newPass}" ተቀይሯል!`;
-      status.classList.remove('hidden');
-
-      setTimeout(() => {
-        closeAdminModal();
-      }, 1200);
+    function resetFormForTesting() {
+      const masterInput = prompt("ገጹን እንደገና ለመክፈት ማስተር ፒን (8888) አስገባ፦");
+      if (masterInput && masterInput.trim() === MASTER_ADMIN_PIN) {
+        localStorage.setItem('identity_user_attempts', '0');
+        location.reload();
+      }
     }
 
     function recordAttemptAndCheck() {
@@ -709,7 +676,8 @@
       document.getElementById('pkg_90').checked = true;
 
       for (let i = 1; i <= 10; i++) {
-        document.getElementById(`q${i}_a`).checked = true;
+        const el = document.getElementById(`q${i}_a`);
+        if (el) el.checked = true;
       }
 
       document.getElementById('identityForm').dispatchEvent(new Event('submit'));
@@ -731,13 +699,16 @@
 
       let rawTotal = 0;
       for (let i = 1; i <= 10; i++) {
-        rawTotal += parseInt(document.querySelector(`input[name="q${i}"]:checked`).value);
+        const checkedInput = document.querySelector(`input[name="q${i}"]:checked`);
+        if (checkedInput) {
+          rawTotal += parseInt(checkedInput.value);
+        }
       }
 
       calculatedPercent = Math.min(rawTotal, 58);
 
       document.getElementById('res_name').innerText = `የ${clientName} የማንነት ውጤት`;
-      document.getElementById('res_subinfo').innerText = `${clientLocation} | ዕድሜ፡ ${age} \vert{} ቆይታ፡ ${duration}`;
+      document.getElementById('res_subinfo').innerText = `${clientLocation} | ዕድሜ፡ ${age} | ቆይታ፡ ${duration}`;
       document.getElementById('res_pkg').innerText = `የተመረጠ አገልግሎት፦ ${selectedPackage}`;
       document.getElementById('res_score_val').innerText = `${calculatedPercent}%`;
 
@@ -799,4 +770,36 @@
         `👤 *ስም:* ${clientName}\n` +
         `📍 *ከተማ:* ${clientLocation}\n` +
         `📦 *የተመረጠ ፕሮግራም:* ${selectedPackage}\n` +
-        `📊 *የማንነት ነጥብ:* ${calculatedPercent}% \n
+        `📊 *የማንነት ነጥብ:* ${calculatedPercent}% \n\n` +
+        `💡 *ውሳኔ:* ወደፊት በባዶ እጄ ላለመቅረት እና ራሴን ለማዳን ስልጠናውን አሁኑኑ ለመጀመር ወስኛለሁ!`;
+    }
+
+    function downloadPDFAndTrack() {
+      const element = document.getElementById('pdfCard');
+      const opt = {
+        margin:       [8, 8, 8, 8],
+        filename:     `${clientName}_የማንነት_መለኪያ.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+      recordAttemptAndCheck();
+    }
+
+    function sendTelegramAndTrack() {
+      const text = getFormattedReportText();
+      const url = `https://t.me/${COACH_TELEGRAM_USER}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      recordAttemptAndCheck();
+    }
+
+    function sendWhatsAppAndTrack() {
+      const text = getFormattedReportText();
+      const url = `https://api.whatsapp.com/send?phone=${COACH_PHONE_NUMBER}&text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+      recordAttemptAndCheck();
+    }
+  </script>
+</body>
+</html>
